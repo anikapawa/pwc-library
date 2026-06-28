@@ -21,7 +21,11 @@ export default function Navbar() {
         </Link>
 
         <Link href="/request-book" className="hover:underline">
-          Request a Book
+          Recommend a Book
+        </Link>
+
+        <Link href="/admin" className="hover:underline">
+          Admin Dashboard
         </Link>
       </div>
     </nav>

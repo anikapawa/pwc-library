@@ -1,4 +1,4 @@
-import { books } from "../../../data/books";
+import { getBookById } from "@/lib/books.server";
 
 type Props = {
   params: Promise<{
@@ -11,9 +11,7 @@ export default async function BookDetailsPage({
 }: Props) {
   const { id } = await params;
 
-  const book = books.find(
-    (book) => book.id === Number(id)
-  );
+  const book = await getBookById(Number(id));
 
   if (!book) {
     return (
@@ -28,11 +26,34 @@ export default async function BookDetailsPage({
   return (
     <main className="min-h-screen bg-white text-black p-10">
       <div className="max-w-4xl mx-auto">
-        
-        {/* Cover Placeholder */}
-        <div className="w-64 h-80 bg-gray-300 rounded-lg mb-8"></div>
 
-        {/* Book Info */}
+        {/* COVER IMAGE (TALLER) */}
+        {book.cover_image ? (
+          <img
+            src={book.cover_image}
+            alt={book.title}
+            className="
+              w-64
+              h-[420px]
+              object-cover
+              rounded-lg
+              mb-8
+              shadow-md
+            "
+          />
+        ) : (
+          <div
+            className="
+              w-64
+              h-[420px]
+              bg-gray-300
+              rounded-lg
+              mb-8
+            "
+          />
+        )}
+
+        {/* BOOK INFO */}
         <h1 className="text-4xl font-bold mb-4">
           {book.title}
         </h1>
@@ -41,15 +62,15 @@ export default async function BookDetailsPage({
           <strong>Author:</strong> {book.author}
         </p>
 
-        <p className="mb-2">
+        <p className="text-lg mb-2">
           <strong>Genre:</strong> {book.genre}
         </p>
 
-        <p className="mb-6">
+        <p className="text-lg mb-8">
           <strong>Status:</strong> {book.status}
         </p>
 
-        {/* Description */}
+        {/* DESCRIPTION */}
         <h2 className="text-2xl font-semibold mb-2">
           Description
         </h2>
@@ -58,19 +79,19 @@ export default async function BookDetailsPage({
           {book.description}
         </p>
 
-        {/* Gender Equity */}
+        {/* GENDER EQUITY */}
         <h2 className="text-2xl font-semibold mb-2">
           Connection to Gender Equity
         </h2>
 
         <p className="mb-8">
-          {book.genderEquityConnection}
+          {book.gender_equity_connection}
         </p>
 
-        {/* Buttons */}
+        {/* ACTIONS */}
         <div className="flex gap-4">
           <a
-            href={book.goodreadsLink}
+            href={book.goodreads_link}
             target="_blank"
             rel="noopener noreferrer"
             className="

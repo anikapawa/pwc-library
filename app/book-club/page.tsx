@@ -1,20 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { books } from "../../data/books";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function BookClubPage() {
+  const [books, setBooks] = useState<any[]>([]);
+
   const currentBook = books.find(
-    (book) => book.isCurrentBookClubPick
+    (book) => book.is_current_book_club_pick
   );
 
   const pastSelections = books.filter(
     (book) =>
-      book.isBookClubSelection &&
-      !book.isCurrentBookClubPick
+      book.is_book_club_selection &&
+      !book.is_current_book_club_pick
   );
 
-  // FORM STATE
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [name, setName] = useState("");
@@ -22,6 +23,28 @@ export default function BookClubPage() {
   const [reason, setReason] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  /* ---------------- FETCH BOOKS ---------------- */
+  useEffect(() => {
+    async function loadBooks() {
+      try {
+        const res = await fetch("/api/books");
+
+        if (!res.ok) {
+          console.error("Failed to fetch books:", res.status);
+          return;
+        }
+
+        const data = await res.json();
+        setBooks(data || []);
+      } catch (err) {
+        console.error("Failed to load books:", err);
+      }
+    }
+
+    loadBooks();
+  }, []);
+
+  /* ---------------- FORM SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -45,7 +68,6 @@ export default function BookClubPage() {
       }
 
       setSubmitted(true);
-
       setTitle("");
       setAuthor("");
       setName("");
@@ -78,7 +100,7 @@ export default function BookClubPage() {
         </h2>
 
         <p className="text-lg text-gray-700 leading-relaxed">
-          The Penn Women&apos;s Center Book Club provides a space for students to engage in meaningful conversations, build community, and explore important social issues through literature.
+          The Penn Women&apos;s Center Book Club provides a space for students to engage in meaningful conversations, build community, and explore important social issues through literature. The club meets once a month to discuss the current selection and connect with fellow readers.
         </p>
       </section>
 
@@ -89,11 +111,30 @@ export default function BookClubPage() {
         </h2>
 
         {currentBook && (
-          <div className="border rounded-lg p-6 flex flex-col md:flex-row gap-6">
+          <div className="border rounded-lg p-6 flex flex-col md:flex-row gap-8">
 
-            <div className="w-[220px] h-[320px] bg-gray-200 rounded" />
+            {/* COVER */}
+            <div className="flex-shrink-0">
+              {currentBook.cover_image ? (
+                <img
+                  src={currentBook.cover_image}
+                  alt={currentBook.title}
+                  className="
+                    w-[220px]
+                    h-[340px]
+                    object-contain
+                    bg-white
+                    rounded-lg
+                    shadow-sm
+                  "
+                />
+              ) : (
+                <div className="w-[220px] h-[340px] bg-gray-200 rounded-lg" />
+              )}
+            </div>
 
-            <div className="flex flex-col justify-between">
+            {/* INFO */}
+            <div className="flex flex-col justify-between flex-1">
               <div>
                 <h3 className="text-3xl font-bold mb-2">
                   {currentBook.title}
@@ -103,17 +144,46 @@ export default function BookClubPage() {
                   by {currentBook.author}
                 </p>
 
-                <p className="text-gray-700 mb-6">
+                {/* MEETING INFO (admin-controlled) */}
+                <div className="mb-6 space-y-1 text-gray-700">
+                  <p>
+                    <span className="font-semibold">Date:</span>{" "}
+                    {currentBook.book_club_date || "Coming Soon"}
+                  </p>
+
+                  <p>
+                    <span className="font-semibold">Time:</span>{" "}
+                    {currentBook.book_club_time || "Coming Soon"}
+                  </p>
+
+                  <p>
+                    <span className="font-semibold">Location:</span>{" "}
+                    {currentBook.book_club_location || "Coming Soon"}
+                  </p>
+                </div>
+
+                <p className="text-gray-700">
                   {currentBook.description}
                 </p>
               </div>
 
-              <a
+              <Link
                 href={`/books/${currentBook.id}`}
-                className="mt-6 inline-block w-fit px-5 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                className="
+                  mt-6
+                  inline-block
+                  w-fit
+                  px-5
+                  py-3
+                  bg-black
+                  text-white
+                  rounded-lg
+                  hover:bg-gray-800
+                  transition
+                "
               >
                 View Book Details
-              </a>
+              </Link>
             </div>
           </div>
         )}
@@ -125,15 +195,51 @@ export default function BookClubPage() {
           Past Selections
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-4">
-          {pastSelections.map((book) => (
-            <div key={book.id} className="border rounded-lg p-4">
-              <div className="w-full h-[180px] bg-gray-200 rounded mb-3" />
+        <div className="flex flex-wrap justify-center gap-6">
 
-              <h3 className="font-semibold">{book.title}</h3>
-              <p className="text-gray-600 text-sm">{book.author}</p>
-            </div>
+          {pastSelections.map((book) => (
+            <Link
+              key={book.id}
+              href={`/books/${book.id}`}
+              className="
+                w-[200px]
+                border
+                rounded-lg
+                p-3
+                hover:shadow-md
+                hover:scale-[1.02]
+                transition
+                cursor-pointer
+                bg-white
+              "
+            >
+              {book.cover_image ? (
+                <img
+                  src={book.cover_image}
+                  alt={book.title}
+                  className="
+                    w-full
+                    h-[300px]
+                    object-contain
+                    bg-white
+                    rounded
+                    mb-3
+                  "
+                />
+              ) : (
+                <div className="w-full h-[300px] bg-gray-200 rounded mb-3" />
+              )}
+
+              <h3 className="font-semibold text-sm">
+                {book.title}
+              </h3>
+
+              <p className="text-gray-600 text-xs">
+                {book.author}
+              </p>
+            </Link>
           ))}
+
         </div>
       </section>
 
@@ -148,7 +254,7 @@ export default function BookClubPage() {
             onSubmit={handleSubmit}
             className="space-y-4 border rounded-lg p-6"
           >
-            {/* TITLE */}
+
             <input
               type="text"
               placeholder="Book Title *"
@@ -158,7 +264,6 @@ export default function BookClubPage() {
               required
             />
 
-            {/* AUTHOR */}
             <input
               type="text"
               placeholder="Author *"
@@ -168,7 +273,6 @@ export default function BookClubPage() {
               required
             />
 
-            {/* NAME (optional) */}
             <input
               type="text"
               placeholder="Your Name (Optional)"
@@ -177,7 +281,6 @@ export default function BookClubPage() {
               className="w-full border p-3 rounded"
             />
 
-            {/* EMAIL (optional) */}
             <input
               type="email"
               placeholder="Your Email (Optional)"
@@ -186,9 +289,8 @@ export default function BookClubPage() {
               className="w-full border p-3 rounded"
             />
 
-            {/* REASON */}
             <textarea
-              placeholder="Why are you recommending this book? (Optional)"
+              placeholder="Why are you recommending this book?"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="w-full border p-3 rounded h-28"
@@ -196,7 +298,16 @@ export default function BookClubPage() {
 
             <button
               type="submit"
-              className="bg-black text-white px-5 py-3 rounded hover:bg-gray-800 transition active:scale-95"
+              className="
+                bg-black
+                text-white
+                px-5
+                py-3
+                rounded
+                hover:bg-gray-800
+                transition
+                cursor-pointer
+              "
             >
               Submit Recommendation
             </button>

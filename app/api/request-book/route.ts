@@ -1,6 +1,9 @@
 import { Resend } from "resend";
+import { supabaseServer } from "@/lib/supabase-server";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(
+  process.env.RESEND_API_KEY!
+);
 
 export async function POST(request: Request) {
   try {
@@ -15,10 +18,48 @@ export async function POST(request: Request) {
       email,
     } = body;
 
-    const data = await resend.emails.send({
+    // ---------------------------
+    // SAVE TO RECOMMENDATIONS TABLE
+    // ---------------------------
+
+    const { error } = await supabaseServer
+      .from("recommendations")
+      .insert([
+        {
+          title,
+          author,
+          type: "New Book",
+          submitted_by:
+            name?.trim() || "Anonymous",
+          status: "Pending",
+        },
+      ]);
+
+    if (error) {
+      console.error(
+        "Supabase insert error:",
+        error
+      );
+
+      return Response.json(
+        {
+          error:
+            "Failed to save recommendation",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    // ---------------------------
+    // SEND EMAIL TO PWC
+    // ---------------------------
+
+    await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "anikapawa25@gmail.com",
-      subject: `New PWC Book Request: ${title}`,
+      to: "anikapawa25@gmail.com", // replace with PWC email later
+      subject: `New PWC Book Recommendation: ${title}`,
       html: `
         <div
           style="
@@ -28,7 +69,7 @@ export async function POST(request: Request) {
             max-width: 600px;
           "
         >
-          <h2>📚 New PWC Book Request</h2>
+          <h2>New PWC Book Recommendation</h2>
 
           <p>
             <strong>Title:</strong>
@@ -53,7 +94,7 @@ export async function POST(request: Request) {
           </p>
 
           <p>
-            <strong>Penn Email:</strong>
+            <strong>Email:</strong>
             ${email || "Not Provided"}
           </p>
 
@@ -70,13 +111,20 @@ export async function POST(request: Request) {
       `,
     });
 
-    return Response.json(data);
+    return Response.json({
+      success: true,
+    });
   } catch (error) {
     console.error(error);
 
     return Response.json(
-      { error: "Failed to send email" },
-      { status: 500 }
+      {
+        error:
+          "Failed to submit recommendation",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

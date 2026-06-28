@@ -64,7 +64,7 @@ export default function RequestBookPage() {
       <div className="max-w-3xl mx-auto">
 
         <h1 className="text-5xl font-bold mb-4">
-          Request a Book
+          Recommend a Book
         </h1>
 
         <p className="text-lg text-gray-600 mb-10 max-w-2xl">
@@ -182,7 +182,7 @@ export default function RequestBookPage() {
                 transition
               "
             >
-              Submit Request
+              Submit Recommendation
             </button>
           </form>
         ) : (

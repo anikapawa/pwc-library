@@ -4,19 +4,66 @@ type Book = {
   id: number;
   title: string;
   author: string;
-  status: string;
+  status: "Available" | "Checked Out" | string;
+  cover_image?: string | null;
 };
 
-export default function BookCard({ book }: { book: Book }) {
+export default function BookCard({
+  book,
+}: {
+  book: Book;
+}) {
+  const statusStyles =
+    book.status === "Available"
+      ? "bg-green-100 text-green-700"
+      : book.status === "Checked Out"
+      ? "bg-red-100 text-red-700"
+      : "bg-yellow-100 text-yellow-700";
+
   return (
     <Link href={`/books/${book.id}`}>
-      <div className="w-[200px] h-[260px] bg-white border rounded-lg p-3 shadow-sm flex flex-col justify-between hover:shadow-lg transition cursor-pointer">
-
-        {/* Cover Placeholder */}
-        <div className="h-[140px] bg-gray-200 rounded mb-3" />
+      <div
+        className="
+          w-[180px]
+          bg-white
+          border
+          rounded-lg
+          p-3
+          shadow-sm
+          flex
+          flex-col
+          hover:shadow-lg
+          transition
+          cursor-pointer
+        "
+      >
+        {/* Cover Image */}
+        {book.cover_image ? (
+          <img
+            src={book.cover_image}
+            alt={book.title}
+            className="
+              w-full
+              aspect-[2/3]
+              object-cover
+              rounded
+              mb-3
+            "
+          />
+        ) : (
+          <div
+            className="
+              w-full
+              aspect-[2/3]
+              bg-gray-200
+              rounded
+              mb-3
+            "
+          />
+        )}
 
         {/* Book Info */}
-        <div>
+        <div className="flex-grow">
           <h3 className="text-sm font-semibold">
             {book.title}
           </h3>
@@ -28,17 +75,18 @@ export default function BookCard({ book }: { book: Book }) {
 
         {/* Status Badge */}
         <span
-          className={`text-xs mt-2 px-2 py-1 rounded w-fit ${
-            book.status === "Available"
-              ? "bg-green-100 text-green-700"
-              : book.status === "Checked Out"
-              ? "bg-red-100 text-red-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`
+            text-xs
+            mt-3
+            px-2
+            py-1
+            rounded
+            w-fit
+            ${statusStyles}
+          `}
         >
           {book.status}
         </span>
-
       </div>
     </Link>
   );
