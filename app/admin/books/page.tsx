@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { getBooks } from "@/lib/books.server";
 import DeleteBookButton from "@/components/DeleteBookButton";

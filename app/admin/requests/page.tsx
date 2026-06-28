@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getRequests } from "../../../lib/requests";
 import StatusBadge from "../../../components/StatusBadge";
 import RequestActions from "./RequestActions";

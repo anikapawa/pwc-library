@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getRecommendations } from "../../../lib/recommendations";
 import StatusBadge from "../../../components/StatusBadge";
 import RecommendationActions from "./RecommendationActions";
