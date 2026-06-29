@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       book_club_date,
       book_club_time,
       book_club_location,
+      free_books_left,
     } = body;
 
     const { data, error } = await supabaseServer
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
           book_club_date,
           book_club_time,
           book_club_location,
+          free_books_left,
         },
       ])
       .select()

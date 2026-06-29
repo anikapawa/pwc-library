@@ -30,6 +30,7 @@ export async function PUT(req: Request, { params }: Props) {
       book_club_date,
       book_club_time,
       book_club_location,
+      free_books_left,
     } = body;
 
     /* ---------------- GUARDRAIL ---------------- */
@@ -76,6 +77,9 @@ export async function PUT(req: Request, { params }: Props) {
         }),
         ...(book_club_location !== undefined && {
           book_club_location,
+        }),
+        ...(free_books_left !== undefined && {
+          free_books_left,
         }),
       })
       .eq("id", Number(id))
