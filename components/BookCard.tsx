@@ -63,14 +63,31 @@ export default function BookCard({
         )}
 
         {/* Book Info */}
-        <div className="flex-grow">
-          <h3 className="text-sm font-semibold">
+        <div className="flex-grow flex flex-col">
+            <h3
+            className="
+            text-sm
+            font-semibold
+            leading-5
+            h-10
+            overflow-hidden
+            "
+            >
             {book.title}
-          </h3>
+            </h3>
 
-          <p className="text-xs text-gray-500">
+            <p
+            className="
+            text-xs
+            text-gray-500
+            leading-4
+            h-8
+            overflow-hidden
+            mt-1
+            "
+            >
             {book.author}
-          </p>
+            </p>
         </div>
 
         {/* Status Badge */}
