@@ -128,10 +128,10 @@ export default function BookClubPage() {
               {/* BUTTON DIRECTLY UNDER IMAGE */}
               <Link
                 href={`/books/${currentBook.id}`}
-                className="mt-4 inline-block px-5 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
-              >
+                className="mt-4 w-[220px] text-center px-5 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+            >
                 View Book Details
-              </Link>
+            </Link>
             </div>
 
             {/* RIGHT: INFO */}
