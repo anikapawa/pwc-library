@@ -87,12 +87,12 @@ export default function Home() {
       </section>
 
       {/* BOOK CLUB */}
-      <section className="max-w-3xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-semibold mb-6 text-center">
+      <section className="px-10 py-10 text-center">
+        <h2 className="text-3xl font-semibold mb-3">
           Book Club
         </h2>
 
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 text-lg mb-5 max-w-xl mx-auto">
           Monthly discussions hosted by the Penn Women&apos;s Center.
         </p>
 
