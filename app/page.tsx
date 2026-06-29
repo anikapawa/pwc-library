@@ -12,13 +12,11 @@ export default function Home() {
       try {
         const res = await fetch("/api/books");
 
-        // ❗ stop if API failed
         if (!res.ok) {
           console.error("Failed to fetch books:", res.status);
           return;
         }
 
-        // ❗ prevent JSON crash
         const text = await res.text();
         if (!text) {
           console.error("Empty response from /api/books");
@@ -44,7 +42,7 @@ export default function Home() {
       {/* HERO */}
       <section className="flex flex-col items-center justify-center text-center py-20 px-6">
         <h1 className="text-5xl font-bold mb-4">
-          PWC Library
+          Penn Women's Center Library
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl">
           Explore books and resources curated by the Penn Women&apos;s Center.

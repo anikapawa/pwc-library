@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BookCard from "@/components/BookCard";
 
 export default function BookClubPage() {
   const [books, setBooks] = useState<any[]>([]);
@@ -28,7 +29,6 @@ export default function BookClubPage() {
     async function loadBooks() {
       try {
         const res = await fetch("/api/books");
-
         if (!res.ok) {
           console.error("Failed to fetch books:", res.status);
           return;
@@ -113,28 +113,29 @@ export default function BookClubPage() {
         {currentBook && (
           <div className="border rounded-lg p-6 flex flex-col md:flex-row gap-8">
 
-            {/* COVER */}
-            <div className="flex-shrink-0">
+            {/* LEFT: COVER + BUTTON STACK */}
+            <div className="flex flex-col items-center flex-shrink-0">
               {currentBook.cover_image ? (
                 <img
                   src={currentBook.cover_image}
                   alt={currentBook.title}
-                  className="
-                    w-[220px]
-                    h-[340px]
-                    object-contain
-                    bg-white
-                    rounded-lg
-                    shadow-sm
-                  "
+                  className="w-[220px] h-[340px] object-contain bg-white rounded-lg shadow-sm"
                 />
               ) : (
                 <div className="w-[220px] h-[340px] bg-gray-200 rounded-lg" />
               )}
+
+              {/* BUTTON DIRECTLY UNDER IMAGE */}
+              <Link
+                href={`/books/${currentBook.id}`}
+                className="mt-4 inline-block px-5 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+              >
+                View Book Details
+              </Link>
             </div>
 
-            {/* INFO */}
-            <div className="flex flex-col justify-between flex-1">
+            {/* RIGHT: INFO */}
+            <div className="flex flex-col flex-1">
               <div>
                 <h3 className="text-3xl font-bold mb-2">
                   {currentBook.title}
@@ -144,7 +145,6 @@ export default function BookClubPage() {
                   by {currentBook.author}
                 </p>
 
-                {/* MEETING INFO (admin-controlled) */}
                 <div className="mb-6 space-y-1 text-gray-700">
                   <p>
                     <span className="font-semibold">Date:</span>{" "}
@@ -167,90 +167,32 @@ export default function BookClubPage() {
                   </p>
                 </div>
 
-                <p className="text-gray-700">
+                <p className="text-gray-700 leading-relaxed">
                   {currentBook.description}
                 </p>
               </div>
-
-              <Link
-                href={`/books/${currentBook.id}`}
-                className="
-                  mt-6
-                  inline-block
-                  w-fit
-                  px-5
-                  py-3
-                  bg-black
-                  text-white
-                  rounded-lg
-                  hover:bg-gray-800
-                  transition
-                "
-              >
-                View Book Details
-              </Link>
             </div>
           </div>
         )}
       </section>
 
       {/* PAST SELECTIONS */}
-      <section className="max-w-5xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-semibold mb-6">
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-semibold mb-6 text-left">
           Past Selections
         </h2>
 
-        <div className="flex flex-wrap justify-center gap-6">
-
+        {/* FULL WIDTH GRID USING BOOKCARD */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {pastSelections.map((book) => (
-            <Link
-              key={book.id}
-              href={`/books/${book.id}`}
-              className="
-                w-[200px]
-                border
-                rounded-lg
-                p-3
-                hover:shadow-md
-                hover:scale-[1.02]
-                transition
-                cursor-pointer
-                bg-white
-              "
-            >
-              {book.cover_image ? (
-                <img
-                  src={book.cover_image}
-                  alt={book.title}
-                  className="
-                    w-full
-                    h-[300px]
-                    object-contain
-                    bg-white
-                    rounded
-                    mb-3
-                  "
-                />
-              ) : (
-                <div className="w-full h-[300px] bg-gray-200 rounded mb-3" />
-              )}
-
-              <h3 className="font-semibold text-sm">
-                {book.title}
-              </h3>
-
-              <p className="text-gray-600 text-xs">
-                {book.author}
-              </p>
-            </Link>
+            <BookCard key={book.id} book={book} />
           ))}
-
         </div>
       </section>
 
       {/* RECOMMEND FORM */}
       <section className="max-w-3xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-semibold mb-6">
+        <h2 className="text-3xl font-semibold mb-6 text-center">
           Recommend a book for the book club!
         </h2>
 
@@ -259,7 +201,6 @@ export default function BookClubPage() {
             onSubmit={handleSubmit}
             className="space-y-4 border rounded-lg p-6"
           >
-
             <input
               type="text"
               placeholder="Book Title *"
@@ -303,16 +244,7 @@ export default function BookClubPage() {
 
             <button
               type="submit"
-              className="
-                bg-black
-                text-white
-                px-5
-                py-3
-                rounded
-                hover:bg-gray-800
-                transition
-                cursor-pointer
-              "
+              className="bg-black text-white px-5 py-3 rounded hover:bg-gray-800 transition cursor-pointer"
             >
               Submit Recommendation
             </button>
@@ -322,13 +254,13 @@ export default function BookClubPage() {
             <h3 className="text-xl font-semibold mb-2">
               Thank you! 🎉
             </h3>
+
             <p className="text-gray-600">
               Your recommendation has been submitted.
             </p>
           </div>
         )}
       </section>
-
     </main>
   );
 }
