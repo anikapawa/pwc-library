@@ -58,7 +58,7 @@ export default function Home() {
 
       {/* PWC FAVORITES */}
       <section className="px-10 py-12">
-        <h2 className="text-2xl font-semibold mb-6">
+        <h2 className="text-3xl font-semibold mb-6">
           PWC Favorites
         </h2>
 
@@ -73,7 +73,7 @@ export default function Home() {
 
       {/* HISTORY MONTH */}
       <section className="px-10 py-12">
-        <h2 className="text-2xl font-semibold mb-6">
+        <h2 className="text-3xl font-semibold mb-6">
           History Month Highlights
         </h2>
 

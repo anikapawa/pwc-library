@@ -177,8 +177,8 @@ export default function BookClubPage() {
       </section>
 
       {/* PAST SELECTIONS */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-semibold mb-6 text-left">
+      <section className="max-w-5xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-semibold mb-6">
           Past Selections
         </h2>
 
