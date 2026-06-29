@@ -183,7 +183,7 @@ export default function BookClubPage() {
         </h2>
 
         {/* FULL WIDTH GRID USING BOOKCARD */}
-        <div className="flex flex-wrap gap-12">
+        <div className="flex flex-wrap gap-14">
             {pastSelections.map((book) => (
                 <BookCard key={book.id} book={book} />
             ))}
