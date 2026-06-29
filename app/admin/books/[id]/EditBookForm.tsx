@@ -19,49 +19,36 @@ export default function EditBookForm({
   book: any;
 }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [formData, setFormData] = useState({
+    title: book.title ?? "",
+    author: book.author ?? "",
+    genre: book.genre ?? "",
+    status: book.status ?? "Available",
+    goodreads_link: book.goodreads_link ?? "",
+    cover_image: book.cover_image ?? "",
+    description: book.description ?? "",
+    gender_equity_connection:
+      book.gender_equity_connection ?? "",
 
-  const [formData, setFormData] =
-    useState({
-      title: book.title ?? "",
-      author: book.author ?? "",
-      genre: book.genre ?? "",
-      status: book.status ?? "Available",
-      goodreads_link:
-        book.goodreads_link ?? "",
-      cover_image:
-        book.cover_image ?? "",
-      description:
-        book.description ?? "",
-      gender_equity_connection:
-        book.gender_equity_connection ??
-        "",
+    book_club_date: book.book_club_date ?? "",
+    book_club_time: book.book_club_time ?? "",
+    book_club_location:
+      book.book_club_location ?? "",
+    free_books_left:
+      book.free_books_left ?? 0,
 
-      book_club_date:
-        book.book_club_date ?? "",
-
-      book_club_time:
-        book.book_club_time ?? "",
-
-      book_club_location:
-        book.book_club_location ?? "",
-
-      is_favorite:
-        book.is_favorite ?? false,
-
-      is_history_month:
-        book.is_history_month ?? false,
-
-      is_current_book_club_pick:
-        book.is_current_book_club_pick ??
-        false,
-
-      is_book_club_selection:
-        book.is_book_club_selection ??
-        false,
-    });
+    is_favorite: book.is_favorite ?? false,
+    is_history_month:
+      book.is_history_month ?? false,
+    is_current_book_club_pick:
+      book.is_current_book_club_pick ??
+      false,
+    is_book_club_selection:
+      book.is_book_club_selection ??
+      false,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -70,11 +57,8 @@ export default function EditBookForm({
       HTMLSelectElement
     >
   ) => {
-    const {
-      name,
-      value,
-      type,
-    } = e.target;
+    const { name, value, type } =
+      e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -83,6 +67,8 @@ export default function EditBookForm({
           ? (
               e.target as HTMLInputElement
             ).checked
+          : type === "number"
+          ? Number(value)
           : value,
     }));
   };
@@ -103,9 +89,7 @@ export default function EditBookForm({
             "Content-Type":
               "application/json",
           },
-          body: JSON.stringify(
-            formData
-          ),
+          body: JSON.stringify(formData),
         }
       );
 
@@ -119,10 +103,7 @@ export default function EditBookForm({
       router.refresh();
     } catch (error) {
       console.error(error);
-
-      alert(
-        "Failed to update book."
-      );
+      alert("Failed to update book.");
     } finally {
       setLoading(false);
     }
@@ -138,151 +119,203 @@ export default function EditBookForm({
         onSubmit={handleSubmit}
         className="space-y-6"
       >
-        {/* TITLE */}
-        <input
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        />
+                {/* TITLE */}
+        <div>
+          <label className="block font-medium mb-2">
+            Title
+          </label>
+
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
 
         {/* AUTHOR */}
-        <input
-          name="author"
-          value={formData.author}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        />
+        <div>
+          <label className="block font-medium mb-2">
+            Author
+          </label>
+
+          <input
+            type="text"
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            required
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
 
         {/* GENRE */}
-        <select
-          name="genre"
-          value={formData.genre}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        >
-          {GENRES.map((g) => (
-            <option
-              key={g}
-              value={g}
-            >
-              {g}
-            </option>
-          ))}
-        </select>
+        <div>
+          <label className="block font-medium mb-2">
+            Genre
+          </label>
 
-        {/* COVER */}
-        <input
-          name="cover_image"
-          value={formData.cover_image}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        />
+          <select
+            name="genre"
+            value={formData.genre}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+            required
+          >
+            {GENRES.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* COVER IMAGE */}
+        <div>
+          <label className="block font-medium mb-2">
+            Cover Image URL
+          </label>
+
+          <input
+            type="text"
+            name="cover_image"
+            value={formData.cover_image}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
 
         {/* GOODREADS */}
-        <input
-          name="goodreads_link"
-          value={
-            formData.goodreads_link
-          }
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        />
+        <div>
+          <label className="block font-medium mb-2">
+            Goodreads Link
+          </label>
+
+          <input
+            type="text"
+            name="goodreads_link"
+            value={formData.goodreads_link}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
 
         {/* STATUS */}
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          className="w-full border rounded-lg p-3"
-        >
-          <option value="Available">
-            Available
-          </option>
+        <div>
+          <label className="block font-medium mb-2">
+            Status
+          </label>
 
-          <option value="Checked Out">
-            Checked Out
-          </option>
-        </select>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full border rounded-lg p-3"
+          >
+            <option value="Available">
+              Available
+            </option>
+
+            <option value="Checked Out">
+              Checked Out
+            </option>
+          </select>
+        </div>
 
         {/* DESCRIPTION */}
-        <textarea
-          name="description"
-          value={
-            formData.description
-          }
-          onChange={handleChange}
-          rows={5}
-          className="w-full border rounded-lg p-3"
-        />
+        <div>
+          <label className="block font-medium mb-2">
+            Description
+          </label>
+
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={5}
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
 
         {/* GENDER EQUITY */}
-        <textarea
-          name="gender_equity_connection"
-          value={
-            formData.gender_equity_connection
-          }
-          onChange={handleChange}
-          rows={4}
-          className="w-full border rounded-lg p-3"
-        />
+        <div>
+          <label className="block font-medium mb-2">
+            Gender Equity Connection
+          </label>
 
+          <textarea
+            name="gender_equity_connection"
+            value={formData.gender_equity_connection}
+            onChange={handleChange}
+            rows={4}
+            className="w-full border rounded-lg p-3"
+          />
+        </div>
+
+        {/* CHECKBOXES */}
         <div className="space-y-3">
-          <label className="flex gap-3">
+          <label className="flex items-center gap-3">
             <input
               type="checkbox"
               name="is_favorite"
-              checked={
-                formData.is_favorite
-              }
+              checked={formData.is_favorite}
               onChange={handleChange}
             />
             PWC Favorite
           </label>
 
-          <label className="flex gap-3">
+          <label className="flex items-center gap-3">
             <input
               type="checkbox"
               name="is_history_month"
-              checked={
-                formData.is_history_month
-              }
+              checked={formData.is_history_month}
               onChange={handleChange}
             />
             History Month Book
           </label>
 
-          <label className="flex gap-3">
+          <label className="flex items-center gap-3">
             <input
               type="checkbox"
               name="is_current_book_club_pick"
-              checked={
-                formData.is_current_book_club_pick
-              }
+              checked={formData.is_current_book_club_pick}
               onChange={handleChange}
             />
             Current Book Club Pick
           </label>
 
-          {formData.is_current_book_club_pick && (
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="is_book_club_selection"
+              checked={formData.is_book_club_selection}
+              onChange={handleChange}
+            />
+            Past Book Club Selection
+          </label>
+        </div>
+
+        {/* BOOK CLUB INFO */}
+        {formData.is_current_book_club_pick && (
           <div className="space-y-4 border rounded-lg p-4">
             <h2 className="text-xl font-semibold">
               Book Club Meeting Information
             </h2>
 
             <div>
-            <label className="block font-medium mb-2">
+              <label className="block font-medium mb-2">
                 Date
-            </label>
-            
-            <input
+              </label>
+
+              <input
                 type="text"
                 name="book_club_date"
                 value={formData.book_club_date}
                 onChange={handleChange}
-                placeholder="October 15, 2026"
                 className="w-full border rounded-lg p-3"
-            />
+              />
             </div>
 
             <div>
@@ -295,7 +328,6 @@ export default function EditBookForm({
                 name="book_club_time"
                 value={formData.book_club_time}
                 onChange={handleChange}
-                placeholder="6:00 PM"
                 className="w-full border rounded-lg p-3"
               />
             </div>
@@ -310,34 +342,33 @@ export default function EditBookForm({
                 name="book_club_location"
                 value={formData.book_club_location}
                 onChange={handleChange}
-                placeholder="PWC Lounge"
+                className="w-full border rounded-lg p-3"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">
+                Free Books Left
+              </label>
+
+              <input
+                type="number"
+                name="free_books_left"
+                value={formData.free_books_left}
+                onChange={handleChange}
+                min={0}
                 className="w-full border rounded-lg p-3"
               />
             </div>
           </div>
         )}
 
-          <label className="flex gap-3">
-            <input
-              type="checkbox"
-              name="is_book_club_selection"
-              checked={
-                formData.is_book_club_selection
-              }
-              onChange={handleChange}
-            />
-            Past Book Club Selection
-          </label>
-        </div>
-
         <button
           type="submit"
           disabled={loading}
           className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50 cursor-pointer"
         >
-          {loading
-            ? "Saving..."
-            : "Save Changes"}
+          {loading ? "Saving..." : "Save Changes"}
         </button>
       </form>
     </main>

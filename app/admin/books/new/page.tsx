@@ -37,6 +37,7 @@ export default function NewBookPage() {
     book_club_date: "",
     book_club_time: "",
     book_club_location: "",
+    free_books_left: 0,
   });
 
   const handleChange = (
@@ -50,8 +51,10 @@ export default function NewBookPage() {
       ...prev,
       [name]:
         type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : value,
+            ? (e.target as HTMLInputElement).checked
+            : type === "number"
+                ? Number(value)
+                : value,
     }));
   };
 
@@ -323,6 +326,21 @@ export default function NewBookPage() {
                 value={formData.book_club_location}
                 onChange={handleChange}
                 placeholder="PWC Lounge"
+                className="w-full border rounded-lg p-3"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-2">
+                Free Books Left
+              </label>
+
+              <input
+                type="number"
+                name="free_books_left"
+                value={formData.free_books_left}
+                onChange={handleChange}
+                min={0}
                 className="w-full border rounded-lg p-3"
               />
             </div>

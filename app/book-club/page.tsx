@@ -160,6 +160,11 @@ export default function BookClubPage() {
                     <span className="font-semibold">Location:</span>{" "}
                     {currentBook.book_club_location || "Coming Soon"}
                   </p>
+
+                  <p>
+                    <span className="font-semibold">Free Books Left:</span>{" "}
+                    {currentBook.free_books_left ?? 0}
+                  </p>
                 </div>
 
                 <p className="text-gray-700">

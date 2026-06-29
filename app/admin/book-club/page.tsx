@@ -21,6 +21,7 @@ export default function BookClubAdminPage() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [freeBooksLeft, setFreeBooksLeft] = useState(0);
 
   /* ---------------- LOAD BOOKS ---------------- */
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function BookClubAdminPage() {
         book_club_date: date,
         book_club_time: time,
         book_club_location: location,
+        free_books_left: freeBooksLeft,
       }),
     });
 
@@ -127,7 +129,7 @@ export default function BookClubAdminPage() {
           </select>
         </div>
 
-        {/* DATE (TEXT INPUT NOW) */}
+        {/* DATE */}
         <div>
           <label className="block font-medium mb-2">
             Book Club Date
@@ -169,6 +171,22 @@ export default function BookClubAdminPage() {
             className="w-full border rounded-lg p-3"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+
+        {/* FREE BOOKS LEFT */}
+        <div>
+          <label className="block font-medium mb-2">
+            Free Books Left
+          </label>
+
+          <input
+            type="number"
+            min={0}
+            className="w-full border rounded-lg p-3"
+            value={freeBooksLeft}
+            onChange={(e) =>
+            setFreeBooksLeft(Number(e.target.value))}
           />
         </div>
 
