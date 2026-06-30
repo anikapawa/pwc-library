@@ -255,7 +255,7 @@ export default function BookClubAdminPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50 cursor-pointer"
         >
           {loading ? "Updating..." : "Set Book Club Pick"}
         </button>
