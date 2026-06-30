@@ -23,6 +23,9 @@ export default function BookClubPage() {
   const [email, setEmail] = useState("");
   const [reason, setReason] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [rsvpName, setRsvpName] = useState("");
+  const [rsvpEmail, setRsvpEmail] = useState("");
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
 
   /* ---------------- FETCH BOOKS ---------------- */
   useEffect(() => {
@@ -76,6 +79,42 @@ export default function BookClubPage() {
     } catch (error) {
       console.error(error);
       alert("Something went wrong. Please try again.");
+    }
+  }
+
+        /* ---------------- RSVP SUBMIT ---------------- */
+
+  async function handleRSVP(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!currentBook) return;
+
+    try {
+      const res = await fetch("/api/book-club/rsvp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          book_id: currentBook.id,
+          email: rsvpEmail,
+          name: rsvpName,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Unable to RSVP.");
+        return;
+      }
+
+      setRsvpSubmitted(true);
+      setRsvpName("");
+      setRsvpEmail("");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong.");
     }
   }
 
@@ -175,6 +214,69 @@ export default function BookClubPage() {
           </div>
         )}
       </section>
+
+      {/* RSVP */}
+
+      {currentBook && (
+        <section className="max-w-3xl mx-auto px-6 pb-12">
+          <div className="border rounded-lg p-8 text-center">
+
+            <h2 className="text-3xl font-semibold mb-4">
+              RSVP for this Month's Discussion
+            </h2>
+
+            <p className="text-gray-600 mb-8">
+              RSVP below and we'll send you a reminder email a few days before the meeting.
+            </p>
+
+            {!rsvpSubmitted ? (
+              <form
+                onSubmit={handleRSVP}
+                className="space-y-4"
+              >
+                <input
+                  type="text"
+                  placeholder="Your Name (Optional)"
+                  value={rsvpName}
+                  onChange={(e) =>
+                    setRsvpName(e.target.value)
+                  }
+                  className="w-full border p-3 rounded"
+                />
+
+                <input
+                  type="email"
+                  placeholder="Your Email *"
+                  required
+                  value={rsvpEmail}
+                  onChange={(e) =>
+                    setRsvpEmail(e.target.value)
+                  }
+                  className="w-full border p-3 rounded"
+                />
+
+                <button
+                  type="submit"
+                  className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition cursor-pointer"
+                >
+                  RSVP
+                </button>
+              </form>
+            ) : (
+              <div>
+                <h3 className="text-xl font-semibold mb-2">
+                  You're all set! 🎉
+                </h3>
+
+                <p className="text-gray-600">
+                  We'll send you a reminder a few days before the meeting.
+                </p>
+              </div>
+            )}
+
+          </div>
+        </section>
+      )}
 
       {/* PAST SELECTIONS */}
       <section className="max-w-5xl mx-auto px-6 py-12">
