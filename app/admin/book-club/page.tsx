@@ -18,6 +18,7 @@ type Book = {
 export default function BookClubAdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | "">("");
+
   const [loading, setLoading] = useState(false);
 
   const [date, setDate] = useState("");
@@ -40,7 +41,40 @@ export default function BookClubAdminPage() {
     loadBooks();
   }, []);
 
-  /* ---------------- PREFILL LOGIC (FIXED) ---------------- */
+  /* ---------------- RESTORE SAVED FORM STATE ---------------- */
+  useEffect(() => {
+    const saved = localStorage.getItem("bookClubAdminForm");
+
+    if (!saved) return;
+
+    try {
+      const data = JSON.parse(saved);
+
+      setSelectedBookId(data.selectedBookId ?? "");
+      setDate(data.date ?? "");
+      setTime(data.time ?? "");
+      setLocation(data.location ?? "");
+      setFreeBooksLeft(data.freeBooksLeft ?? 0);
+    } catch (err) {
+      console.error("Failed to restore form:", err);
+    }
+  }, []);
+
+  /* ---------------- SAVE FORM STATE (PERSIST ACROSS NAVIGATION) ---------------- */
+  useEffect(() => {
+    localStorage.setItem(
+      "bookClubAdminForm",
+      JSON.stringify({
+        selectedBookId,
+        date,
+        time,
+        location,
+        freeBooksLeft,
+      })
+    );
+  }, [selectedBookId, date, time, location, freeBooksLeft]);
+
+  /* ---------------- PREFILL WHEN BOOK SELECTED ---------------- */
   useEffect(() => {
     if (!selectedBookId) return;
 
@@ -70,18 +104,15 @@ export default function BookClubAdminPage() {
 
       const selectedId = Number(selectedBookId);
 
-      // Get current pick
       const currentBook = books.find(
         (b) => b.is_current_book_club_pick
       );
 
-      // If switching books, demote old one
+      /* demote old pick */
       if (currentBook && currentBook.id !== selectedId) {
         await fetch(`/api/admin/books/${currentBook.id}`, {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             is_current_book_club_pick: false,
             is_book_club_selection: true,
@@ -89,14 +120,12 @@ export default function BookClubAdminPage() {
         });
       }
 
-      // Set new current pick
+      /* set new pick */
       const res = await fetch(
         `/api/admin/books/${selectedId}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             is_current_book_club_pick: true,
             is_book_club_selection: false,
@@ -111,6 +140,9 @@ export default function BookClubAdminPage() {
       if (!res.ok) {
         throw new Error("Failed to update book club pick");
       }
+
+      /* clear saved draft AFTER success */
+      localStorage.removeItem("bookClubAdminForm");
 
       alert("Book club updated successfully!");
     } catch (err) {
@@ -168,7 +200,6 @@ export default function BookClubAdminPage() {
 
           <input
             type="text"
-            placeholder="October 15, 2026"
             className="w-full border rounded-lg p-3"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -183,7 +214,6 @@ export default function BookClubAdminPage() {
 
           <input
             type="text"
-            placeholder="6:00 PM"
             className="w-full border rounded-lg p-3"
             value={time}
             onChange={(e) => setTime(e.target.value)}
@@ -198,7 +228,6 @@ export default function BookClubAdminPage() {
 
           <input
             type="text"
-            placeholder="PWC Lounge"
             className="w-full border rounded-lg p-3"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
