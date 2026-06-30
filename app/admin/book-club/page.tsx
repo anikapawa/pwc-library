@@ -18,7 +18,6 @@ type Book = {
 export default function BookClubAdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | "">("");
-
   const [loading, setLoading] = useState(false);
 
   const [date, setDate] = useState("");
@@ -41,20 +40,21 @@ export default function BookClubAdminPage() {
     loadBooks();
   }, []);
 
-  /* ---------------- SELECTED BOOK ---------------- */
-  const selectedBook = books.find(
-    (b) => b.id === Number(selectedBookId)
-  );
-
-  /* ---------------- PREFILL LOGIC (NEW) ---------------- */
+  /* ---------------- PREFILL LOGIC (FIXED) ---------------- */
   useEffect(() => {
-    if (!selectedBook) return;
+    if (!selectedBookId) return;
 
-    setDate(selectedBook.book_club_date ?? "");
-    setTime(selectedBook.book_club_time ?? "");
-    setLocation(selectedBook.book_club_location ?? "");
-    setFreeBooksLeft(selectedBook.free_books_left ?? 0);
-  }, [selectedBook]);
+    const book = books.find(
+      (b) => b.id === Number(selectedBookId)
+    );
+
+    if (!book) return;
+
+    setDate(book.book_club_date ?? "");
+    setTime(book.book_club_time ?? "");
+    setLocation(book.book_club_location ?? "");
+    setFreeBooksLeft(book.free_books_left ?? 0);
+  }, [selectedBookId, books]);
 
   /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
@@ -70,16 +70,18 @@ export default function BookClubAdminPage() {
 
       const selectedId = Number(selectedBookId);
 
-      // 1. Get current book club pick FIRST
+      // Get current pick
       const currentBook = books.find(
         (b) => b.is_current_book_club_pick
       );
 
-      // 2. If there is an old one, update it to past
+      // If switching books, demote old one
       if (currentBook && currentBook.id !== selectedId) {
         await fetch(`/api/admin/books/${currentBook.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             is_current_book_club_pick: false,
             is_book_club_selection: true,
@@ -87,12 +89,14 @@ export default function BookClubAdminPage() {
         });
       }
 
-      // 3. Set new current pick
+      // Set new current pick
       const res = await fetch(
         `/api/admin/books/${selectedId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             is_current_book_club_pick: true,
             is_book_club_selection: false,
@@ -104,8 +108,9 @@ export default function BookClubAdminPage() {
         }
       );
 
-      if (!res.ok)
+      if (!res.ok) {
         throw new Error("Failed to update book club pick");
+      }
 
       alert("Book club updated successfully!");
     } catch (err) {
@@ -118,6 +123,7 @@ export default function BookClubAdminPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
+
       <h1 className="text-4xl font-bold mb-8">
         Book Club Management
       </h1>
@@ -126,6 +132,7 @@ export default function BookClubAdminPage() {
         onSubmit={handleSubmit}
         className="space-y-6 border rounded-lg p-6"
       >
+
         {/* BOOK SELECT */}
         <div>
           <label className="block font-medium mb-2">
@@ -136,7 +143,11 @@ export default function BookClubAdminPage() {
             className="w-full border rounded-lg p-3"
             value={selectedBookId}
             onChange={(e) =>
-              setSelectedBookId(Number(e.target.value))
+              setSelectedBookId(
+                e.target.value === ""
+                  ? ""
+                  : Number(e.target.value)
+              )
             }
           >
             <option value="">Select a book</option>
@@ -215,7 +226,7 @@ export default function BookClubAdminPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50 cursor-pointer"
+          className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50"
         >
           {loading ? "Updating..." : "Set Book Club Pick"}
         </button>
