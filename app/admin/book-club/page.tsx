@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 
 type Book = {
@@ -11,11 +12,13 @@ type Book = {
   book_club_date?: string | null;
   book_club_time?: string | null;
   book_club_location?: string | null;
+  free_books_left?: number;
 };
 
 export default function BookClubAdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | "">("");
+
   const [loading, setLoading] = useState(false);
 
   const [date, setDate] = useState("");
@@ -38,63 +41,80 @@ export default function BookClubAdminPage() {
     loadBooks();
   }, []);
 
+  /* ---------------- SELECTED BOOK ---------------- */
   const selectedBook = books.find(
     (b) => b.id === Number(selectedBookId)
   );
 
+  /* ---------------- PREFILL LOGIC (NEW) ---------------- */
+  useEffect(() => {
+    if (!selectedBook) return;
+
+    setDate(selectedBook.book_club_date ?? "");
+    setTime(selectedBook.book_club_time ?? "");
+    setLocation(selectedBook.book_club_location ?? "");
+    setFreeBooksLeft(selectedBook.free_books_left ?? 0);
+  }, [selectedBook]);
+
   /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!selectedBookId) {
-    alert("Please select a book.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const selectedId = Number(selectedBookId);
-
-    // 1. Get current book club pick FIRST
-    const currentBook = books.find((b) => b.is_current_book_club_pick);
-
-    // 2. If there is an old one, update it to past
-    if (currentBook && currentBook.id !== selectedId) {
-      await fetch(`/api/admin/books/${currentBook.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          is_current_book_club_pick: false,
-          is_book_club_selection: true, // mark as past pick
-        }),
-      });
+    if (!selectedBookId) {
+      alert("Please select a book.");
+      return;
     }
 
-    // 3. Set new current pick
-    const res = await fetch(`/api/admin/books/${selectedId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        is_current_book_club_pick: true,
-        is_book_club_selection: false,
-        book_club_date: date,
-        book_club_time: time,
-        book_club_location: location,
-        free_books_left: freeBooksLeft,
-      }),
-    });
+    try {
+      setLoading(true);
 
-    if (!res.ok) throw new Error("Failed to update book club pick");
+      const selectedId = Number(selectedBookId);
 
-    alert("Book club updated successfully!");
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong.");
-  } finally {
-    setLoading(false);
+      // 1. Get current book club pick FIRST
+      const currentBook = books.find(
+        (b) => b.is_current_book_club_pick
+      );
+
+      // 2. If there is an old one, update it to past
+      if (currentBook && currentBook.id !== selectedId) {
+        await fetch(`/api/admin/books/${currentBook.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            is_current_book_club_pick: false,
+            is_book_club_selection: true,
+          }),
+        });
+      }
+
+      // 3. Set new current pick
+      const res = await fetch(
+        `/api/admin/books/${selectedId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            is_current_book_club_pick: true,
+            is_book_club_selection: false,
+            book_club_date: date,
+            book_club_time: time,
+            book_club_location: location,
+            free_books_left: freeBooksLeft,
+          }),
+        }
+      );
+
+      if (!res.ok)
+        throw new Error("Failed to update book club pick");
+
+      alert("Book club updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
@@ -186,7 +206,8 @@ export default function BookClubAdminPage() {
             className="w-full border rounded-lg p-3"
             value={freeBooksLeft}
             onChange={(e) =>
-            setFreeBooksLeft(Number(e.target.value))}
+              setFreeBooksLeft(Number(e.target.value))
+            }
           />
         </div>
 
