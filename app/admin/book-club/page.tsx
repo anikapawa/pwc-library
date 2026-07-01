@@ -15,8 +15,16 @@ type Book = {
   free_books_left?: number;
 };
 
+type RSVP = {
+  id: number;
+  name: string;
+  email: string;
+  reminder_sent: boolean;
+};
+
 export default function BookClubAdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [rsvps, setRsvps] = useState<RSVP[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | "">("");
 
   const [loading, setLoading] = useState(false);
@@ -33,6 +41,9 @@ export default function BookClubAdminPage() {
         const res = await fetch("/api/books");
         const data = await res.json();
         setBooks(data || []);
+        const rsvpRes = await fetch("/api/admin/book-club-rsvps");
+        const rsvpData = await rsvpRes.json();
+        setRsvps(rsvpData || []);
       } catch (err) {
         console.error("Failed to load books:", err);
       }
@@ -153,6 +164,12 @@ export default function BookClubAdminPage() {
     }
   }
 
+  const totalRsvps = rsvps.length;
+
+  const remainingReminders = rsvps.filter(
+    (r) => !r.reminder_sent
+  ).length;
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
 
@@ -260,6 +277,86 @@ export default function BookClubAdminPage() {
           {loading ? "Updating..." : "Set Book Club Pick"}
         </button>
       </form>
+      <div className="mt-12 border rounded-lg p-6">
+        <h2 className="text-2xl font-bold mb-6">
+          Book Club RSVPs
+        </h2>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="border rounded-lg p-4">
+            <p className="text-gray-500 text-sm">
+              Total RSVPs
+            </p>
+
+            <p className="text-3xl font-bold">
+              {totalRsvps}
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-4">
+            <p className="text-gray-500 text-sm">
+              Reminder Emails Remaining
+            </p>
+
+            <p className="text-3xl font-bold">
+              {remainingReminders}
+            </p>
+          </div>
+        </div>
+
+        {remainingReminders === 0 ? (
+          <div className="bg-green-100 border border-green-300 rounded-lg p-4 text-green-700 font-medium mb-6">
+            Everyone has received a reminder email.
+          </div>
+        ) : (
+          <button
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 cursor-pointer mb-6"
+          >
+            Send Reminder Emails
+          </button>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-3">Name</th>
+                <th className="text-left p-3">Email</th>
+                <th className="text-left p-3">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {rsvps.map((rsvp) => (
+                <tr
+                  key={rsvp.id}
+                  className="border-b"
+                >
+                  <td className="p-3">
+                    {rsvp.name}
+                  </td>
+
+                  <td className="p-3">
+                    {rsvp.email}
+                  </td>
+
+                  <td className="p-3">
+                    {rsvp.reminder_sent ? (
+                      <span className="text-green-600 font-medium">
+                        ✓ Reminder Sent
+                      </span>
+                    ) : (
+                      <span className="text-red-600 font-medium">
+                        ✗ Reminder Not Sent
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
   );
 }
