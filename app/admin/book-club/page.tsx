@@ -157,6 +157,9 @@ export default function BookClubAdminPage() {
       localStorage.removeItem("bookClubAdminForm");
 
       alert("Book club updated successfully!");
+      const updated = await fetch("/api/books");
+      const updatedData = await updated.json();
+      setBooks(updatedData || []);
     } catch (err) {
       console.error(err);
       alert("Something went wrong.");
