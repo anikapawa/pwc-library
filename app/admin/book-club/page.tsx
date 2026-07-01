@@ -17,7 +17,8 @@ type Book = {
 
 type RSVP = {
   id: number;
-  name: string;
+  book_id: number;
+  name: string | null;
   email: string;
   reminder_sent: boolean;
 };
@@ -164,9 +165,13 @@ export default function BookClubAdminPage() {
     }
   }
 
-  const totalRsvps = rsvps.length;
+  const currentRsvps = rsvps.filter(
+    (r) => r.book_id === Number(selectedBookId)
+  );
 
-  const remainingReminders = rsvps.filter(
+  const totalRsvps = currentRsvps.length;
+
+  const remainingReminders = currentRsvps.filter(
     (r) => !r.reminder_sent
   ).length;
 
@@ -327,13 +332,15 @@ export default function BookClubAdminPage() {
             </thead>
 
             <tbody>
-              {rsvps.map((rsvp) => (
+              {currentRsvps.map((rsvp) => (
                 <tr
                   key={rsvp.id}
                   className="border-b"
                 >
                   <td className="p-3">
-                    {rsvp.name}
+                    {rsvp.name?.trim()
+                      ? rsvp.name
+                      : "Anonymous"}
                   </td>
 
                   <td className="p-3">
@@ -343,11 +350,11 @@ export default function BookClubAdminPage() {
                   <td className="p-3">
                     {rsvp.reminder_sent ? (
                       <span className="text-green-600 font-medium">
-                        ✓ Reminder Sent
+                        Reminder Sent
                       </span>
                     ) : (
                       <span className="text-red-600 font-medium">
-                        ✗ Reminder Not Sent
+                        Reminder Not Sent
                       </span>
                     )}
                   </td>
