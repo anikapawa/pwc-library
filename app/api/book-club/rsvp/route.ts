@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       from: "onboarding@resend.dev",
       to: email,
       subject:
-        "You're Registered for the PWC Book Club!",
+        "PWC Book Club RSVP Confirmation",
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
 
