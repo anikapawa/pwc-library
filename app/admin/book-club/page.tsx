@@ -165,9 +165,12 @@ export default function BookClubAdminPage() {
     }
   }
 
-  const currentRsvps = rsvps.filter(
-    (r) => r.book_id === Number(selectedBookId)
-  );
+  const currentRsvps =
+  selectedBookId === ""
+    ? []
+    : rsvps.filter(
+        (r) => r.book_id === Number(selectedBookId)
+      );
 
   const totalRsvps = currentRsvps.length;
 
@@ -309,7 +312,11 @@ export default function BookClubAdminPage() {
           </div>
         </div>
 
-        {remainingReminders === 0 ? (
+        {totalRsvps === 0 ? (
+          <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 text-gray-700 font-medium mb-6">
+            No one has RSVP'd for this book club yet.
+          </div>
+        ) : remainingReminders === 0 ? (
           <div className="bg-green-100 border border-green-300 rounded-lg p-4 text-green-700 font-medium mb-6">
             Everyone has received a reminder email.
           </div>
@@ -332,34 +339,48 @@ export default function BookClubAdminPage() {
             </thead>
 
             <tbody>
-              {currentRsvps.map((rsvp) => (
-                <tr
-                  key={rsvp.id}
-                  className="border-b"
-                >
-                  <td className="p-3">
-                    {rsvp.name?.trim()
-                      ? rsvp.name
-                      : "Anonymous"}
-                  </td>
-
-                  <td className="p-3">
-                    {rsvp.email}
-                  </td>
-
-                  <td className="p-3">
-                    {rsvp.reminder_sent ? (
-                      <span className="text-green-600 font-medium">
-                        Reminder Sent
-                      </span>
-                    ) : (
-                      <span className="text-red-600 font-medium">
-                        Reminder Not Sent
-                      </span>
-                    )}
+              {selectedBookId === "" ? (
+                <tr>
+                  <td colSpan={3} className="p-4 text-gray-500">
+                    Select a book to view RSVPs.
                   </td>
                 </tr>
-              ))}
+              ) : currentRsvps.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-4 text-gray-500">
+                    No RSVPs for this book yet.
+                  </td>
+                </tr>
+              ) : (
+                currentRsvps.map((rsvp) => (
+                  <tr
+                    key={rsvp.id}
+                    className="border-b"
+                  >
+                    <td className="p-3">
+                      {rsvp.name?.trim()
+                        ? rsvp.name
+                        : "Anonymous"}
+                    </td>
+
+                    <td className="p-3">
+                      {rsvp.email}
+                    </td>
+
+                    <td className="p-3">
+                      {rsvp.reminder_sent ? (
+                        <span className="text-green-600 font-medium">
+                          Reminder Sent
+                        </span>
+                      ) : (
+                        <span className="text-red-600 font-medium">
+                          Reminder Not Sent
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
