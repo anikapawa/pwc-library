@@ -154,7 +154,7 @@ export default function BookClubAdminPage() {
       }
 
       /* clear saved draft AFTER success */
-      localStorage.removeItem("bookClubAdminForm");
+      /* localStorage.removeItem("bookClubAdminForm"); */
 
       alert("Book club updated successfully!");
       const updated = await fetch("/api/books");
