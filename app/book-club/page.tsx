@@ -82,7 +82,7 @@ export default function BookClubPage() {
     }
   }
 
-        /* ---------------- RSVP SUBMIT ---------------- */
+  /* ---------------- RSVP SUBMIT ---------------- */
 
   async function handleRSVP(e: React.FormEvent) {
     e.preventDefault();
@@ -338,7 +338,7 @@ export default function BookClubPage() {
             />
 
             <textarea
-              placeholder="Why are you recommending this book?"
+              placeholder="Why are you recommending this book? (Optional)"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="w-full border p-3 rounded h-28"
