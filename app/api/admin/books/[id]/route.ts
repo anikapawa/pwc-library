@@ -39,7 +39,9 @@ export async function PUT(req: Request, { params }: Props) {
     if (is_current_book_club_pick) {
       await supabaseServer
         .from("books")
-        .update({ is_current_book_club_pick: false })
+        .update({ is_current_book_club_pick: false,
+          is_book_club_selection: true,
+        })
         .neq("id", Number(id));
     }
 
