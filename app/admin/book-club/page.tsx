@@ -29,6 +29,7 @@ export default function BookClubAdminPage() {
   const [selectedBookId, setSelectedBookId] = useState<number | "">("");
 
   const [loading, setLoading] = useState(false);
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -181,6 +182,51 @@ export default function BookClubAdminPage() {
     (r) => !r.reminder_sent
   ).length;
 
+  async function sendReminderEmails() {
+  if (!selectedBookId) return;
+
+  try {
+    setSendingReminders(true);
+
+    const res = await fetch(
+      "/api/admin/send-reminder-emails",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          book_id: selectedBookId,
+        }),
+      }
+    );
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.error);
+    }
+
+    alert(
+      `Reminder emails sent to ${result.sent} attendee(s)!`
+    );
+
+    // Refresh RSVP data
+    const rsvpRes = await fetch(
+      "/api/admin/book-club-rsvps"
+    );
+
+    const updated = await rsvpRes.json();
+
+    setRsvps(updated);
+  } catch (err) {
+    console.error(err);
+    alert("Failed to send reminder emails.");
+  } finally {
+    setSendingReminders(false);
+  }
+}
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-12">
 
@@ -325,9 +371,13 @@ export default function BookClubAdminPage() {
           </div>
         ) : (
           <button
-            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 cursor-pointer mb-6"
+            onClick={sendReminderEmails}
+            disabled={sendingReminders}
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50 cursor-pointer mb-6"
           >
-            Send Reminder Emails
+            {sendingReminders
+              ? "Sending..."
+              : "Send Reminder Emails"}
           </button>
         )}
 
