@@ -45,6 +45,11 @@ export async function POST(req: Request) {
     let sent = 0;
 
     for (const attendee of attendees ?? []) {
+
+        const greeting = attendee.name?.trim()
+        ? `Hello ${attendee.name},`
+        : "Hello,";
+
       try {
         await resend.emails.send({
           from: "onboarding@resend.dev",
@@ -53,7 +58,7 @@ export async function POST(req: Request) {
           html: `
             <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
 
-              <p>Hello ${attendee.name || ""},</p>
+              <p>${greeting}</p>
 
               <p>
                 This is a reminder that the Penn Women's Center Book Club is coming up!

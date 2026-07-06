@@ -73,6 +73,10 @@ export async function POST(request: Request) {
       .eq("id", book_id)
       .single();
 
+      const greeting = name?.trim()
+      ? `Hello ${name},`
+      : "Hello,";
+
     // Send confirmation email
     await resend.emails.send({
       from: "onboarding@resend.dev",
@@ -82,7 +86,7 @@ export async function POST(request: Request) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
 
-          <p>Hello ${name || ""},</p>
+          <p>${greeting}</p>
 
           <p>
             Your RSVP for the Penn Women's Center Book Club has been received!
