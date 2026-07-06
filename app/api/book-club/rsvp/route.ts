@@ -82,10 +82,10 @@ export async function POST(request: Request) {
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
 
-          <h2>Thank you for registering!</h2>
+          <p>Hello ${name || ""},</p>
 
           <p>
-            Your RSVP for the Penn Women's Center Book Club has been received.
+            Your RSVP for the Penn Women's Center Book Club has been received!
           </p>
 
           <hr />

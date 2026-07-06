@@ -52,9 +52,8 @@ export async function POST(req: Request) {
           subject: `Reminder: PWC Book Club`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
-              <h2>Penn Women's Center Book Club Reminder</h2>
 
-              <p>Hello ${attendee.name || "there"},</p>
+              <p>Hello ${attendee.name || ""},</p>
 
               <p>
                 This is a reminder that the Penn Women's Center Book Club is coming up!
