@@ -54,54 +54,38 @@ export default function BookClubAdminPage() {
     loadBooks();
   }, []);
 
-  /* ---------------- RESTORE SAVED FORM STATE ---------------- */
-  useEffect(() => {
-    const saved = localStorage.getItem("bookClubAdminForm");
+ /* ---------------- AUTOLOAD CURRENT BOOK CLUB PICK ---------------- */
+useEffect(() => {
+  if (books.length === 0) return;
 
-    if (!saved) return;
+  const current = books.find(
+    (book) => book.is_current_book_club_pick
+  );
 
-    try {
-      const data = JSON.parse(saved);
+  if (!current) return;
 
-      setSelectedBookId(data.selectedBookId ?? "");
-      setDate(data.date ?? "");
-      setTime(data.time ?? "");
-      setLocation(data.location ?? "");
-      setFreeBooksLeft(data.freeBooksLeft ?? 0);
-    } catch (err) {
-      console.error("Failed to restore form:", err);
-    }
-  }, []);
+  setSelectedBookId(current.id);
+  setDate(current.book_club_date ?? "");
+  setTime(current.book_club_time ?? "");
+  setLocation(current.book_club_location ?? "");
+  setFreeBooksLeft(current.free_books_left ?? 0);
+}, [books]);
 
-  /* ---------------- SAVE FORM STATE (PERSIST ACROSS NAVIGATION) ---------------- */
-  useEffect(() => {
-    localStorage.setItem(
-      "bookClubAdminForm",
-      JSON.stringify({
-        selectedBookId,
-        date,
-        time,
-        location,
-        freeBooksLeft,
-      })
-    );
-  }, [selectedBookId, date, time, location, freeBooksLeft]);
+  /* ---------------- UPDATE FORM WHEN A DIFFERENT BOOK IS SELECTED ---------------- */
+useEffect(() => {
+  if (selectedBookId === "") return;
 
-  /* ---------------- PREFILL WHEN BOOK SELECTED ---------------- */
-  useEffect(() => {
-    if (!selectedBookId) return;
+  const book = books.find(
+    (b) => b.id === Number(selectedBookId)
+  );
 
-    const book = books.find(
-      (b) => b.id === Number(selectedBookId)
-    );
+  if (!book) return;
 
-    if (!book) return;
-
-    setDate(book.book_club_date ?? "");
-    setTime(book.book_club_time ?? "");
-    setLocation(book.book_club_location ?? "");
-    setFreeBooksLeft(book.free_books_left ?? 0);
-  }, [selectedBookId, books]);
+  setDate(book.book_club_date ?? "");
+  setTime(book.book_club_time ?? "");
+  setLocation(book.book_club_location ?? "");
+  setFreeBooksLeft(book.free_books_left ?? 0);
+}, [selectedBookId]);
 
   /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
