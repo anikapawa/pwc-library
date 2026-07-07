@@ -17,7 +17,9 @@ export async function POST(request: Request) {
       email,
     } = body;
 
+    // ---------------------------
     // SAVE TO REQUESTS TABLE
+    // ---------------------------
 
     const { error } = await supabaseServer
       .from("requests")
@@ -48,14 +50,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // SEND EMAIL
-
     const isCheckout =
       type === "checkout";
 
+    // ---------------------------
+    // SEND EMAIL TO PWC
+    // ---------------------------
+
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "anikapawa25@gmail.com",
+      to: "anikapawa25@gmail.com", // Replace with PWC email later
       subject: isCheckout
         ? `Checkout Request: ${title}`
         : `Hold Request: ${title}`,
@@ -97,6 +101,55 @@ export async function POST(request: Request) {
             <strong>Email:</strong>
             ${email}
           </p>
+        </div>
+      `,
+    });
+
+    // ---------------------------
+    // SEND CONFIRMATION TO USER
+    // ---------------------------
+
+    const greeting = name?.trim()
+      ? `Hello ${name},`
+      : "Hello,";
+
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: email,
+      subject: isCheckout
+        ? "PWC Checkout Request Confirmation"
+        : "PWC Hold Request Confirmation",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
+
+          <p>${greeting}</p>
+
+          <p>
+            Your ${
+              isCheckout
+                ? "checkout"
+                : "hold"
+            } request has been successfully received.
+          </p>
+
+          <hr />
+
+          <p><strong>Title:</strong> ${title}</p>
+
+          <p><strong>Author:</strong> ${author}</p>
+
+          <p>
+            ${
+              isCheckout
+                ? "Our team will review your checkout request and contact you once the book is ready for pickup."
+                : "Our team will notify you when this book becomes available for pickup."
+            }
+          </p>
+
+          <p>
+            Thank you for using the Penn Women's Center Library!
+          </p>
+
         </div>
       `,
     });
