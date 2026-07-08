@@ -109,8 +109,12 @@ export async function POST(request: Request) {
     // SEND CONFIRMATION TO USER
     // ---------------------------
 
-    const greeting = name?.trim()
-      ? `Hello ${name},`
+    const firstName = name?.trim()
+      ? name.trim().split(" ")[0]
+      : "";
+
+    const greeting = firstName
+      ? `Hello ${firstName},`
       : "Hello,";
 
     await resend.emails.send({

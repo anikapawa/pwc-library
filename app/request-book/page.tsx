@@ -141,7 +141,7 @@ export default function RequestBookPage() {
 
             <input
               type="text"
-              placeholder="Your Name (Optional)"
+              placeholder="Full Name (Optional)"
               value={name}
               onChange={(e) =>
                 setName(e.target.value)

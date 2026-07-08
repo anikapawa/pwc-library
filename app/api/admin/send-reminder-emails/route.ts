@@ -46,8 +46,13 @@ export async function POST(req: Request) {
 
     for (const attendee of attendees ?? []) {
 
-        const greeting = attendee.name?.trim()
-        ? `Hello ${attendee.name},`
+      // Use only first name in greeting
+      const firstName = attendee.name?.trim()
+        ? attendee.name.trim().split(" ")[0]
+        : "";
+
+      const greeting = firstName
+        ? `Hello ${firstName},`
         : "Hello,";
 
       try {

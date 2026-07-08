@@ -61,28 +61,30 @@ export async function POST(request: Request) {
     // Get book information
     const { data: book } = await supabaseServer
       .from("books")
-      .select(
-        `
+      .select(`
         title,
         author,
         book_club_date,
         book_club_time,
         book_club_location
-      `
-      )
+      `)
       .eq("id", book_id)
       .single();
 
-      const greeting = name?.trim()
-      ? `Hello ${name},`
+    // Use only first name in greeting
+    const firstName = name?.trim()
+      ? name.trim().split(" ")[0]
+      : "";
+
+    const greeting = firstName
+      ? `Hello ${firstName},`
       : "Hello,";
 
     // Send confirmation email
     await resend.emails.send({
       from: "onboarding@resend.dev",
       to: email,
-      subject:
-        "PWC Book Club RSVP Confirmation",
+      subject: "PWC Book Club RSVP Confirmation",
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; line-height:1.6;">
 

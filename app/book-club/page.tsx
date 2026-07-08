@@ -236,7 +236,8 @@ export default function BookClubPage() {
               >
                 <input
                   type="text"
-                  placeholder="Your Name (Optional)"
+                  placeholder="Full Name *"
+                  required
                   value={rsvpName}
                   onChange={(e) =>
                     setRsvpName(e.target.value)
@@ -246,7 +247,7 @@ export default function BookClubPage() {
 
                 <input
                   type="email"
-                  placeholder="Your Email *"
+                  placeholder="Penn Email *"
                   required
                   value={rsvpEmail}
                   onChange={(e) =>
@@ -323,7 +324,7 @@ export default function BookClubPage() {
 
             <input
               type="text"
-              placeholder="Your Name (Optional)"
+              placeholder="Full Name (Optional)"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full border p-3 rounded"
@@ -331,7 +332,7 @@ export default function BookClubPage() {
 
             <input
               type="email"
-              placeholder="Your Email (Optional)"
+              placeholder="Penn Email (Optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full border p-3 rounded"
