@@ -144,7 +144,7 @@ export default function RequestPage() {
           >
             <input
               type="text"
-              placeholder="Full Name"
+              placeholder="Full Name *"
               value={name}
               onChange={(e) =>
                 setName(e.target.value)
@@ -155,7 +155,7 @@ export default function RequestPage() {
 
             <input
               type="email"
-              placeholder="Penn Email"
+              placeholder="Penn Email *"
               value={email}
               onChange={(e) =>
                 setEmail(e.target.value)
